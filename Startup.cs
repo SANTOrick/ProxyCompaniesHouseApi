@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using ProxyApi.Configuration;
 using ProxyApi.DataClient;
+using ProxyApi.Filters;
 
 namespace ProxyApiToCompaniesHouseApi
 {
@@ -27,7 +24,16 @@ namespace ProxyApiToCompaniesHouseApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClient<ICompaniesHouseApi, CompaniesHouseApi>();
-            services.AddControllers();
+            services.Configure<ProxyApiConfiguration>(Configuration.GetSection("proxyApiConfiguration"));
+             services.AddMvc(options =>
+             {
+                 options.Filters.Add(new VerifyAccessFilter(Configuration["authorization:headerName"], Configuration["authorization:apiKey"]));
+             })
+               .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                  .AddJsonOptions(options =>
+                  {
+                     
+                  });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

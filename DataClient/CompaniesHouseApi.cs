@@ -7,6 +7,7 @@ using ProxyApi.Constants;
 using System.Net.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using ProxyApi.Configuration;
 
 namespace ProxyApi.DataClient
 {
@@ -14,10 +15,14 @@ namespace ProxyApi.DataClient
     {
         public string _companiesHouseUrl = CompaniesHouseApiSettings.Urlbase;
         private readonly HttpClient _client;
+        private readonly ProxyApiConfiguration _proxyApiConfiguration;
 
-        public CompaniesHouseApi(HttpClient client)
+
+        public CompaniesHouseApi(HttpClient client, IOptions<ProxyApiConfiguration> proxyApiConfiguration)
         {
+
             _client = client;
+            _proxyApiConfiguration = proxyApiConfiguration.Value;
         }
 
         public async Task<GetOrganizationResponse> GetCompaniesApiCompanyList(string request)

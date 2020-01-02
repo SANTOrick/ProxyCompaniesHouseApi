@@ -26,27 +26,28 @@ namespace ProxyApi.Controllers
             return "Service up and running";
         }
 
+        [AllowAnonymous]
         [Route("/search")]
         [HttpGet]
-        public async Task<GetOrganizationResponse> GetOrganization([FromForm]string request)
+        public async Task<GetOrganizationResponse> GetOrganization([FromBody]GetOrganizationRequest request)
         {
             var response = new GetOrganizationResponse();
 
             try
             {
-                if (string.IsNullOrWhiteSpace(request))
+                if (string.IsNullOrWhiteSpace(request.SearchTerm))
                 {
                     throw new ArgumentException($"{nameof(request)} is null.");
                 }
 
-                response = await _companiesHouseApi.GetCompaniesApiCompanyList(request);
+                response = await _companiesHouseApi.GetCompaniesApiCompanyList(request.SearchTerm);
 
                 if (response.ListOfCompanies == null)
                 {
                     HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 }
             }
-            catch (Exception ex)
+           catch (Exception ex)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
